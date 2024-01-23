@@ -52,8 +52,6 @@ export async function readDictContent(dictInfo: FileInfoItem, mainConfig: AutoRo
       router = [...res]
     }
   }
-  console.log(dictList, 'dictList');
-  
   outer: for (const key in dictList) {
     if (
       // @ts-ignore
