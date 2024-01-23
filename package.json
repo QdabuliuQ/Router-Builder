@@ -1,13 +1,12 @@
 {
   "name": "auto-router",
   "version": "1.0.0",
-  "description": "",
-  "main": "/dist/index.cjs",
+  "description": "auto generation router",
   "files": [
-    "dist/"
+    "bin"
   ],
   "bin": {
-    "auto-router": "/dist/index.cjs"
+    "auto-router": "bin/index.cjs"
   },
   "type": "module",
   "scripts": {
