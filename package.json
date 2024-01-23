@@ -2,12 +2,12 @@
   "name": "router-builder",
   "version": "1.0.1",
   "description": "A plugin that automatically generates routing configurations based on the directories",
-  "keywords": ["vue", "vue-router", "auto", "rollup"],
+  "keywords": ["vue", "vue-router", "router-builder", "rollup"],
   "repository": {
     "type": "git",
-    "url": "https://github.com/QdabuliuQ/auto-router"
+    "url": "https://github.com/QdabuliuQ/router-builder"
   },
-  "homepage": "https://github.com/QdabuliuQ/auto-router",
+  "homepage": "https://github.com/QdabuliuQ/router-builder",
   "files": [
     "bin"
   ],
