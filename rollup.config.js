@@ -14,7 +14,12 @@ export default {
     banner: '#! /usr/bin/env node\nglobal.navigator = {userAgent: "node.js"}', // 补丁
   },
   plugins: [ // 打包插件
-    terser(), // 压缩打包的结果
+    terser({
+      maxWorkers: 4, // 多线程压缩
+      compress: {
+        drop_console: true  // 移除 console.log
+      }
+    }), // 压缩打包的结果
     resolve({ preferBuiltins: true }), // 查找和打包node_modules中的第三方模块
     commonjs(), // 将 CommonJS 转换成 ES2015 模块供 Rollup 处理
     typescript(), // 解析TypeScript

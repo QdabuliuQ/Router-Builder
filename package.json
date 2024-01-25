@@ -2,7 +2,12 @@
   "name": "router-builder",
   "version": "1.0.1",
   "description": "A plugin that automatically generates routing configurations based on the directories",
-  "keywords": ["vue", "vue-router", "router-builder", "rollup"],
+  "keywords": [
+    "vue",
+    "vue-router",
+    "router-builder",
+    "rollup"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/QdabuliuQ/router-builder"
@@ -18,22 +23,48 @@
   "scripts": {
     "build": "rollup -c",
     "build:w": "rollup -c -w",
-    "dev": "ts-node src/index.ts analyze"
+    "dev": "ts-node src/index.ts analyze",
+    "prepublish": "npm run version && npm run build"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "lint-staged": {
+    "*.{ts,js}": [
+      "node --max_old_space_size=8192 ./node_modules/.bin/prettier -w",
+      "node --max_old_space_size=8192 ./node_modules/.bin/eslint --fix --color",
+      "git add"
+    ]
   },
   "author": "QdabuliuQ",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
-    "path": "^0.12.7",
-    "prettier": "^3.2.4"
+    "path": "^0.12.7"
   },
   "devDependencies": {
+    "@commitlint/cli": "^18.5.0",
+    "@commitlint/config-conventional": "^18.5.0",
     "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-json": "^6.0.1",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^11.1.5",
     "@types/node": "^20.11.5",
+    "@typescript-eslint/eslint-plugin": "^6.19.1",
+    "@typescript-eslint/parser": "^6.19.1",
     "colors-console": "^1.0.3",
+    "eslint": "^8.56.0",
+    "husky": "^3.1.0",
+    "lint-staged": "^15.2.0",
+    "prettier": "^3.2.4",
     "rollup": "^4.9.6",
     "tslib": "^2.6.2",
     "typescript": "^5.3.3"
