@@ -1,6 +1,6 @@
 {
   "name": "router-builder",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A plugin that automatically generates routing configurations based on the directories",
   "keywords": [
     "vue",
