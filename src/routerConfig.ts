@@ -42,10 +42,13 @@ export async function generateRouterConfig(
     router = [];
     for (const item of routerConfig) {
       conveyFunctionToString(item);
+      const webpackChunkName = item.webpackChunkName
+      // 如果存在 webpackChunkName 字段，保存然后移除
+      item.webpackChunkName && delete item.webpackChunkName
       router.push({
         ...defaultRouter,
         ...item,
-        component: importCode(dictInfo.names, dictInfo.name, config, item.webpackChunkName),
+        component: importCode(dictInfo.names, dictInfo.name, config, webpackChunkName),
       });
     }
   }
@@ -53,9 +56,7 @@ export async function generateRouterConfig(
 };
 
 // 生成 router 文件
-export async function generateRouterFile(code: string, option: any, config: AutoRouterConfig) {
-  console.log(option);
-
+export async function generateRouterFile(code: string, config: AutoRouterConfig) {
   // 解析输出路径
   const paths: string[] = config.output.split("/").filter((item) => Boolean(item));
   const fileName: string = paths.pop() as string; // 先保存文件名称
@@ -72,63 +73,15 @@ export async function generateRouterFile(code: string, option: any, config: Auto
     }
   }
   // 通过 writeFile 方法将最终结果写入到对应路径的文件当中
-  const res = await prettier.format(await generateRouterTemplate(code, option), { parser: 'babel' });
+  const res = await prettier.format(await generateRouterTemplate(code), { parser: 'babel' });
   fs.promises.writeFile(
     `${fullPath}//${fileName}`,
     res
   );
 };
 
-async function generateRouterTemplate(router: string, option: any): Promise<string> {
-  // 获取 packageJSON 文件 读取其 vue 的版本，生成不同的 router 文件
-  const packageJSON = JSON.parse(
-    await fs.promises.readFile(`${rootPath}\\package.json`, "utf-8")
-  );
-  let code = '';
-
-  // const optionJSONStr = JSON.stringify(conveyFunctionToString(option))
-  // console.log(optionJSONStr);
-
-  // console.log(optionJSONStr.substring(1, optionJSONStr.length - 2).replace(/"\$\$\$|\$\$\$"|\\r|\\n/g, ""));
-
-
-  if (packageJSON.dependencies) {
-    // const routerOption: string[] = []
-    // for (const key in option) {
-    //   if (Object.prototype.hasOwnProperty.call(option, key)) {
-    //     if (key === 'routes') continue
-    //     let value = option[key] as any
-    //     if (typeof value === 'function') {
-    //       value = value.toString()
-    //     } else if (typeof value === 'string') {
-    //       value = `"${value}"`
-    //     }
-    //     routerOption.push(`${key}: ${value}`)
-    //   }
-    // }
-    // const geneOption = routerOption.join(",")
-
-    // vue2 版本
-    if (packageJSON.dependencies.vue.replace("^", "").split(".")[0] === "2") {
-      code = `
-import Vue from "vue";
-import Router from "vue-router";
-Vue.use(Router);
-export default new Router({
-  routes: ${router},
-})
-        `;
-    } else {
-      // vue3 版本
-      code = `
-import { createRouter } from 'vue-router'
-const router = createRouter({
-	routes: ${router},
-})
-
-export default router
-        `;
-    }
-  }
-  return code
+async function generateRouterTemplate(router: string): Promise<string> {
+  return `
+export default ${router}  
+`
 };

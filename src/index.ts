@@ -9,7 +9,6 @@ let customConfig = null;
 // 尝试读取配置文件 router.config.js
 try {
   customConfig = require(`${process.cwd()}\\router.config.js`);
-
 } catch (error) {
   console.log(colors(['white', 'redBG'], "the router.config.js is no exist"));
 }
@@ -19,7 +18,7 @@ try {
   // 定义默认的配置
   const defaultConfig: AutoRouterConfig = {
     entry: "/src/views",
-    output: "/src/router/index.js",
+    output: "/src/router/router.js",
     importPrefix: "@/src/views",
     ignoreFolder: [],
     fileName: "index",
@@ -58,7 +57,6 @@ try {
       generateRouterFile(
         // 转为json 并且移除函数标识符
         JSON.stringify(router).replace(/"\$\$\$|\$\$\$"|\\r|\\n/g, ""),
-        customConfig.option,
         mainConfig
       );
       console.log(colors(['white', 'greenBG'], "router file generation successful!"));

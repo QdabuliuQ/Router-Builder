@@ -23,7 +23,7 @@
 ```js
 module.exports = {
   entry: "/src/views", // 读取文件路径入口
-  output: "/src/router/index.js", // 路由文件输出路径
+  output: "/src/router/router.js", // 路由文件输出路径
   importPrefix: "@/views", // 组件导入前缀
   ignoreFolder: [“components”, /child\d/],  // 忽略匹配的文件夹 可以是字符串和正则
   fileName: "index", // 文件夹下的文件名称，通常是页面文件
@@ -51,6 +51,8 @@ module.exports = {
 ```
 
 3. `router`的配置选项都可以写入到`<router></router>`标签当中。
+
+4. 执行`npx router-builder`可以看到根据`output`选项配置的文件路径输出一个文件，改文件默认导出一个路由数组`export default [  ]`，将该文件导入到对应的路由配置文件当中使用即可。
 
 ## 插件文件结构
 
