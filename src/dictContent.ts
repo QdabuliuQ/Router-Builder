@@ -3,13 +3,13 @@ import { getFilesInfo } from "./filesInfo";
 import { FileInfoItem, FilesInfo } from "./types/filesInfo";
 import { generateRouterConfig, getRouterConfig } from "./routerConfig";
 import { isRegExp } from "./utils/isRegExp";
-import { AutoRouterConfig } from "./types";
+import { AutoRouterConfig, ImportOption } from "./types";
 
-async function readFileContent (dictInfo: FileInfoItem, mainConfig: AutoRouterConfig) {
+// 读取文件内容
+async function readFileContent(dictInfo: FileInfoItem, mainConfig: AutoRouterConfig) {
   try {
     const data = await fs.promises.readFile(
-      `${dictInfo.fullPath}\\${
-        mainConfig.fileName === "<dictName>" ? dictInfo.name : "index"
+      `${dictInfo.fullPath}\\${mainConfig.fileName === "<dictName>" ? dictInfo.name : "index"
       }.vue`,
       "utf-8"
     );
@@ -20,11 +20,12 @@ async function readFileContent (dictInfo: FileInfoItem, mainConfig: AutoRouterCo
   }
 };
 
-export async function readDictContent(dictInfo: FileInfoItem, mainConfig: AutoRouterConfig): Promise<any> {
+// 读取文件夹内容
+export async function readDictContent(dictInfo: FileInfoItem, imports: ImportOption, mainConfig: AutoRouterConfig): Promise<any> {
   // 读取该文件夹下的子文件夹/文件
   const dictList: FilesInfo = getFilesInfo(dictInfo.fullPath);
   if (JSON.stringify(dictList) === "{}") return null; // 空文件夹 直接返回 null
-  let router = null;
+  let router = null
   if (
     dictList.hasOwnProperty(
       mainConfig.fileName === "<dictName>"
@@ -41,10 +42,12 @@ export async function readDictContent(dictInfo: FileInfoItem, mainConfig: AutoRo
     };
     // 读取页面文件 查看是否存在 <router></router> 配置对象
     const customRouter = await readFileContent(dictInfo, mainConfig);
+
     // 生成路由配置
     const res = await generateRouterConfig(
       customRouter,
       defaultRouter,
+      imports,
       dictInfo,
       mainConfig as any
     );
@@ -56,9 +59,9 @@ export async function readDictContent(dictInfo: FileInfoItem, mainConfig: AutoRo
     if (
       // @ts-ignore
       dictList[
-        mainConfig.fileName === "<dictName>"
-          ? `${dictInfo.name}.vue`
-          : "index.vue"
+      mainConfig.fileName === "<dictName>"
+        ? `${dictInfo.name}.vue`
+        : "index.vue"
       ] === key
     ) continue
     if (dictList[key].type === 'file') continue
@@ -75,7 +78,7 @@ export async function readDictContent(dictInfo: FileInfoItem, mainConfig: AutoRo
       }
     }
     // 继续递归调用查找，递归子文件夹
-    const res = await readDictContent(dictList[key], mainConfig);
+    const res = await readDictContent(dictList[key], imports, mainConfig);
     if (router) {
       for (const item of router) {
         if (!item.children) item.children = [];

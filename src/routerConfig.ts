@@ -1,10 +1,11 @@
 import fs from "node:fs"
 import prettier from "prettier"
-import { AutoRouterConfig } from "./types";
+import { AutoRouterConfig, ImportOption } from "./types";
 import { FileInfoItem } from "./types/filesInfo";
 import { conveyFunctionToString } from "./utils/funToString";
 import { importCode } from "./utils/importCode";
 import { rootPath } from "./utils/rootPath";
+import { dataType } from "./utils/dataType";
 
 // 读取文件 <router></router>
 export function getRouterConfig(content: string) {
@@ -29,11 +30,13 @@ export function getRouterConfig(content: string) {
 // 生成路由配置对象
 // routerConfig 多个路由信息
 // defaultRouter 默认的路由信息
+// imports 导入依赖
 // dictInfo 当前文件夹信息
 // dictList 子文件夹/子文件
 export async function generateRouterConfig(
   routerConfig: any,
   defaultRouter: any,
+  imports: ImportOption,
   dictInfo: FileInfoItem,
   config: AutoRouterConfig
 ) {
@@ -42,6 +45,31 @@ export async function generateRouterConfig(
     router = [];
     for (const item of routerConfig) {
       conveyFunctionToString(item);
+      // 判断import对象
+      if (item.import && dataType(item.import) === 'object') {
+        // 遍历import对象
+        for (const key in item.import) {
+          // 判断数据类型
+          if (Object.prototype.hasOwnProperty.call(item.import, key) && dataType(item.import[key]) === 'array' && item.import[key].length) {
+            // 之前没有存在
+            if (!Object.prototype.hasOwnProperty.call(imports, key)) {
+              imports[key] = new Map()
+            }
+            // 遍历导入的子依赖
+            for (const dep of item.import[key]) {
+              if (dataType(dep) === 'string') {
+                imports[key].set(dep, dep)
+              } else if (dataType(dep) === 'object') {
+                if (dataType(dep.name) === 'string' && Object.prototype.hasOwnProperty.call(dep, 'alias') ? dataType(dep.alias) === 'string' : true && Object.prototype.hasOwnProperty.call(dep, 'default') ? dataType(dep.default) === 'boolean' : true) {
+                  imports[key].set(dep.name, dep)
+                }
+              }
+            }
+          }
+        }
+        delete item.import
+      }
+
       const webpackChunkName = item.webpackChunkName
       // 如果存在 webpackChunkName 字段，保存然后移除
       item.webpackChunkName && delete item.webpackChunkName
@@ -56,7 +84,7 @@ export async function generateRouterConfig(
 };
 
 // 生成 router 文件
-export async function generateRouterFile(code: string, config: AutoRouterConfig) {
+export async function generateRouterFile(route: string, imports: string, config: AutoRouterConfig) {
   // 解析输出路径
   const paths: string[] = config.output.split("/").filter((item) => Boolean(item));
   const fileName: string = paths.pop() as string; // 先保存文件名称
@@ -72,16 +100,18 @@ export async function generateRouterFile(code: string, config: AutoRouterConfig)
       await fs.promises.mkdir(fullPath);
     }
   }
+
   // 通过 writeFile 方法将最终结果写入到对应路径的文件当中
-  const res = await prettier.format(await generateRouterTemplate(code), { parser: 'babel' });
+  const res = await prettier.format(generateRouterTemplate(route, imports), { parser: 'babel' });
   fs.promises.writeFile(
     `${fullPath}//${fileName}`,
     res
   );
 };
 
-async function generateRouterTemplate(router: string): Promise<string> {
+function generateRouterTemplate(router: string, imports: string): string {
   return `
+${imports}
 export default ${router}  
 `
 };

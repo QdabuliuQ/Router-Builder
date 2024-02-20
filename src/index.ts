@@ -2,8 +2,9 @@ import colors from "colors-console"
 import fs from "node:fs"
 import { getFilesInfo } from "./filesInfo";
 import { readDictContent } from "./dictContent";
-import { AutoRouterConfig } from "./types/index";
+import { AutoRouterConfig, ImportOption } from "./types/index";
 import { generateRouterFile } from "./routerConfig";
+import { getImportCode } from "./utils/getImportCode";
 
 let customConfig = null;
 // 尝试读取配置文件 router.config.js
@@ -40,12 +41,14 @@ try {
     (async function () {
       const dictList = getFilesInfo(`${rootPath}\\${entryPath}`); // 获取path目录下的文件内容
       const router = []; // router 对象
+      // 导入语句
+      const imports: ImportOption = {}
       for (const key in dictList) {
         // 遍历子文件夹
         if (dictList.hasOwnProperty(key)) {
           if (dictList[key].type === "dict") {
             // 判断是否是文件夹类型
-            const res = await readDictContent(dictList[key], mainConfig as any); // 递归搜索
+            const res = await readDictContent(dictList[key], imports, mainConfig as any); // 递归搜索
             if (res) {
               // 将递归的结果存入 router 数组
               router.push(...res);
@@ -57,6 +60,7 @@ try {
       generateRouterFile(
         // 转为json 并且移除函数标识符
         JSON.stringify(router).replace(/"\$\$\$|\$\$\$"|\\r|\\n/g, ""),
+        getImportCode(imports),
         mainConfig
       );
       console.log(colors(['white', 'greenBG'], "router file generation successful!"));
