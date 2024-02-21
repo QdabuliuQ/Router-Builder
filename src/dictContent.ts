@@ -42,17 +42,18 @@ export async function readDictContent(dictInfo: FileInfoItem, imports: ImportOpt
     };
     // 读取页面文件 查看是否存在 <router></router> 配置对象
     const customRouter = await readFileContent(dictInfo, mainConfig);
-
-    // 生成路由配置
-    const res = await generateRouterConfig(
-      customRouter,
-      defaultRouter,
-      imports,
-      dictInfo,
-      mainConfig as any
-    );
-    if (res) {
-      router = [...res]
+    if (customRouter) {
+      // 生成路由配置
+      const res = await generateRouterConfig(
+        customRouter,
+        defaultRouter,
+        imports,
+        dictInfo,
+        mainConfig as any
+      );
+      if (res) {
+        router = [...res]
+      }
     }
   }
   outer: for (const key in dictList) {

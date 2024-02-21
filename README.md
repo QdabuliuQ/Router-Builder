@@ -55,25 +55,45 @@ module.exports = {
 4. 执行`npx router-builder`可以看到根据`output`选项配置的文件路径输出一个文件，改文件默认导出一个路由数组`export default [  ]`，将该文件导入到对应的路由配置文件当中使用即可。
 
 ## <router>参数
-
 1. `<router></router>`标签支持传入自定义参数，包含了`meta, name, 自定义参数`。
 
 2. 一个文件可以存在多个`<router></router>`，这样意味着这个页面会生成多条路由路径指向该页面。
+```js
+<router>
+  name: 'edit',
+  meta: {
+    title: 'edit'
+  }
+</router>
+<router>
+  name: 'add',
+  meta: {
+    title: 'add'
+  }
+</router>
+```
 
 3. `<router> webpackChunkName: "chunkName" </router>`，可以添加固有参数`webpackChunkName`，组件就会在导入的时候自动添加该魔法注释：`component: () => import(/* webpackChunkName: "配置的属性值" */ "path")`。
+```js
+<router>
+  webpackChunkName: "chunkName",
+</router>
+
+// 输出
+component: () => import(/* webpackChunkName: 'chunkName' */, "path...")
+```
 
 4. 也支持定义路由的导航守卫，直接写入函数内容即可
 
 ```js
 <router>
-  // 写法一 beforeEach: (to, from) => {}
-  // 写法而 beforeEach: function(to, from) {}
-  // 改简写方式暂不支持 beforeEach(to, from) {}
+  beforeEach: (to, from) => {},
+  beforeEach(to, from) {},
+  beforeEach: function(to, from) {}
 </router>
 ```
 
 ## 插件文件结构
-
 ```
 │  .gitignore
 │  main.d.ts

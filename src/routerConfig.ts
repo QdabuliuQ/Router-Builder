@@ -2,8 +2,8 @@ import fs from "node:fs"
 import prettier from "prettier"
 import { AutoRouterConfig, ImportOption } from "./types";
 import { FileInfoItem } from "./types/filesInfo";
-import { conveyFunctionToString } from "./utils/funToString";
-import { importCode } from "./utils/importCode";
+import { conveyFunction } from "./utils/conveyFunction";
+import { generatorImports, importCode } from "./utils/importCode";
 import { rootPath } from "./utils/rootPath";
 import { dataType } from "./utils/dataType";
 
@@ -22,7 +22,7 @@ export function getRouterConfig(content: string) {
     const params = matches.map((match) =>
       eval(`(function(){return {${match}}})()`)
     );
-    return params;
+    return params
   }
   return null;
 }
@@ -41,32 +41,17 @@ export async function generateRouterConfig(
   config: AutoRouterConfig
 ) {
   let router = null;
+
   if (routerConfig) {
     router = [];
     for (const item of routerConfig) {
-      conveyFunctionToString(item);
+      conveyFunction(item);
+
       // 判断import对象
       if (item.import && dataType(item.import) === 'object') {
-        // 遍历import对象
-        for (const key in item.import) {
-          // 判断数据类型
-          if (Object.prototype.hasOwnProperty.call(item.import, key) && dataType(item.import[key]) === 'array' && item.import[key].length) {
-            // 之前没有存在
-            if (!Object.prototype.hasOwnProperty.call(imports, key)) {
-              imports[key] = new Map()
-            }
-            // 遍历导入的子依赖
-            for (const dep of item.import[key]) {
-              if (dataType(dep) === 'string') {
-                imports[key].set(dep, dep)
-              } else if (dataType(dep) === 'object') {
-                if (dataType(dep.name) === 'string' && Object.prototype.hasOwnProperty.call(dep, 'alias') ? dataType(dep.alias) === 'string' : true && Object.prototype.hasOwnProperty.call(dep, 'default') ? dataType(dep.default) === 'boolean' : true) {
-                  imports[key].set(dep.name, dep)
-                }
-              }
-            }
-          }
-        }
+        // 处理import对象
+        generatorImports(item.import, imports)
+        // 删除 import 属性
         delete item.import
       }
 
@@ -102,6 +87,7 @@ export async function generateRouterFile(route: string, imports: string, config:
   }
 
   // 通过 writeFile 方法将最终结果写入到对应路径的文件当中
+  route = route.replace(/\\n/g, '\n');
   const res = await prettier.format(generateRouterTemplate(route, imports), { parser: 'babel' });
   fs.promises.writeFile(
     `${fullPath}//${fileName}`,

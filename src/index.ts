@@ -59,7 +59,7 @@ try {
       // 将 router 内容写入到文件当中
       generateRouterFile(
         // 转为json 并且移除函数标识符
-        JSON.stringify(router).replace(/"\$\$\$|\$\$\$"|\\r|\\n/g, ""),
+        JSON.stringify(router).replace(/"\$\$\$|\$\$\$"/g, ""),
         getImportCode(imports),
         mainConfig
       );
