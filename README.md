@@ -32,6 +32,7 @@ module.exports = {
 
 2. 如果一个页面希望配置成为一个路由页面，则可以在`.vue`文件夹中添加`<router></router>`标签
 
+
 ```html
 // router 标签包裹的内容就是页面路由配置
 <router> title: 'home', meta: { info: "home" } </router>
@@ -55,6 +56,14 @@ module.exports = {
 4. 执行`npx router-builder`可以看到根据`output`选项配置的文件路径输出一个文件，改文件默认导出一个路由数组`export default [  ]`，将该文件导入到对应的路由配置文件当中使用即可。
 
 ## <router>参数
+router配置参数，可在以下参数以外继续添加，新增的参数并且不是内置的参数会并入`router`配置对象
+| 参数(params) | 必选(require) | 说明(description) | 类型(type) | 默认值(default) |
+| ------------- | ----------- |------------- |----------------------------- | ----------- |
+| `path` | `false` | 路由路径，当出现多个`<router>`标签的时候则是必填 | `string` | - |
+| `name` | `true` | 路由路径，当出现多个`<router>`标签的时候则是必填 | `string` | - |
+| `import` | `false` | 需要导入依赖的，可以配置`import`属性 | `{ [prop: string]: Array<string 或 { name: string, alias?: string, default?: boolean }` | - |
+| `webpackChunkName` | `false` | 导入语句分块注释 | `string` | - |
+
 1. `<router></router>`标签支持传入自定义参数，包含了`meta, name, 自定义参数`。
 
 2. 一个文件可以存在多个`<router></router>`，这样意味着这个页面会生成多条路由路径指向该页面。
@@ -91,6 +100,26 @@ component: () => import(/* webpackChunkName: 'chunkName' */, "path...")
   beforeEach(to, from) {},
   beforeEach: function(to, from) {}
 </router>
+```
+
+5. `import`配置：如果在函数当中使用了第三方依赖或者需要导入的依赖，那么可以通过`import`配置对象生成`import`导入语句
+```js
+import: {
+  '@/utils/index': [
+    'getDate',  // 默认导出属性
+    {
+      name: 'getType',  // 导出属性名称
+      alias: '_getType'  // 指定别名
+    },
+    {
+      name: 'getTime',  // 导出属性名称
+      default: true  // 指定为默认导出
+    }
+  ]
+}
+
+// 最终转为import语句
+import getTime, { getDate, getType as _getType } from "@/utils/index"
 ```
 
 ## 插件文件结构
