@@ -1,8 +1,8 @@
-import { AutoRouterConfig, ImportOption } from "../types";
+import { RouterBuilderConfig, ImportOption } from "../types";
 import { dataType } from "./dataType";
 
 // 导入语句特殊处理
-export function importCode(paths: string[], name: string, config: AutoRouterConfig, webpackChunkName: string | undefined) {
+export function importCode(paths: string[], name: string, config: RouterBuilderConfig, webpackChunkName: string | undefined) {
   // 存在魔法注释 加入代码
   if (webpackChunkName) {
     return `$$$() => import( /* webpackChunkName: '${webpackChunkName}' */ '${config.importPrefix}/${paths.length ? paths.join("/") + "/" : ""
@@ -14,7 +14,7 @@ export function importCode(paths: string[], name: string, config: AutoRouterConf
 };
 
 // 处理import对象
-export function generatorImports(importOption: Array<any>, imports: ImportOption): void {
+export function depImportCode(importOption: Array<any>, imports: ImportOption): void {
   // 遍历import对象
   for (const key in importOption) {
     // 判断数据类型

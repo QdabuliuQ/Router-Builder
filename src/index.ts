@@ -2,9 +2,8 @@ import colors from "colors-console"
 import fs from "node:fs"
 import { getFilesInfo } from "./filesInfo";
 import { readDictContent } from "./dictContent";
-import { AutoRouterConfig, ImportOption } from "./types/index";
-import { generateRouterFile } from "./routerConfig";
-import { getImportCode } from "./utils/getImportCode";
+import { RouterBuilderConfig, ImportOption } from "./types/index";
+import { outerRouterOptionHandle } from "./utils/generateFile";
 
 let customConfig = null;
 // 尝试读取配置文件 router.config.js
@@ -17,7 +16,7 @@ try {
 (function () {
   if (!customConfig) return
   // 定义默认的配置
-  const defaultConfig: AutoRouterConfig = {
+  const defaultConfig: RouterBuilderConfig = {
     entry: "/src/views",
     output: "/src/router/router.js",
     importPrefix: "@/src/views",
@@ -26,7 +25,7 @@ try {
   };
 
   // 完整配置
-  const mainConfig: AutoRouterConfig = {
+  const mainConfig: RouterBuilderConfig = {
     ...defaultConfig,
     ...customConfig,
   };
@@ -56,13 +55,15 @@ try {
           }
         }
       }
-      // 将 router 内容写入到文件当中
-      generateRouterFile(
-        // 转为json 并且移除函数标识符
-        JSON.stringify(router).replace(/"\$\$\$|\$\$\$"/g, ""),
-        getImportCode(imports),
-        mainConfig
-      );
+      const moduleImports = []
+      for (let item of router) {
+        if (typeof item == 'string') {
+          item = item.replace(/\$\$\$/g, "")
+          moduleImports.push(`import ${item} from "./${item}"`)
+        }
+      }
+      await outerRouterOptionHandle(router, mainConfig.output)
+
       console.log(colors(['white', 'greenBG'], "router file generation successful!"));
     })();
   } else {

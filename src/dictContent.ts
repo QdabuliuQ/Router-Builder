@@ -3,10 +3,10 @@ import { getFilesInfo } from "./filesInfo";
 import { FileInfoItem, FilesInfo } from "./types/filesInfo";
 import { generateRouterConfig, getRouterConfig } from "./routerConfig";
 import { isRegExp } from "./utils/isRegExp";
-import { AutoRouterConfig, ImportOption } from "./types";
+import { RouterBuilderConfig, ImportOption } from "./types";
 
 // 读取文件内容
-async function readFileContent(dictInfo: FileInfoItem, mainConfig: AutoRouterConfig) {
+async function readFileContent(dictInfo: FileInfoItem, mainConfig: RouterBuilderConfig) {
   try {
     const data = await fs.promises.readFile(
       `${dictInfo.fullPath}\\${mainConfig.fileName === "<dictName>" ? dictInfo.name : "index"
@@ -21,11 +21,12 @@ async function readFileContent(dictInfo: FileInfoItem, mainConfig: AutoRouterCon
 };
 
 // 读取文件夹内容
-export async function readDictContent(dictInfo: FileInfoItem, imports: ImportOption, mainConfig: AutoRouterConfig): Promise<any> {
+export async function readDictContent(dictInfo: FileInfoItem, imports: ImportOption, mainConfig: RouterBuilderConfig): Promise<any> {
   // 读取该文件夹下的子文件夹/文件
   const dictList: FilesInfo = getFilesInfo(dictInfo.fullPath);
   if (JSON.stringify(dictList) === "{}") return null; // 空文件夹 直接返回 null
   let router = null
+  // 判断是否存在 vue 文件
   if (
     dictList.hasOwnProperty(
       mainConfig.fileName === "<dictName>"
@@ -56,6 +57,7 @@ export async function readDictContent(dictInfo: FileInfoItem, imports: ImportOpt
       }
     }
   }
+  // 遍历文件夹目录
   outer: for (const key in dictList) {
     if (
       // @ts-ignore
@@ -82,6 +84,7 @@ export async function readDictContent(dictInfo: FileInfoItem, imports: ImportOpt
     const res = await readDictContent(dictList[key], imports, mainConfig);
     if (router) {
       for (const item of router) {
+        if (typeof item === 'string') continue;
         if (!item.children) item.children = [];
         res && item.children.push(...res);
       }
@@ -89,5 +92,6 @@ export async function readDictContent(dictInfo: FileInfoItem, imports: ImportOpt
       router = res;
     }
   }
+
   return router;
 }

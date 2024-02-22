@@ -1,4 +1,4 @@
-export interface AutoRouterConfig {
+export interface RouterBuilderConfig {
   entry: string
   output: string
   importPrefix: string
