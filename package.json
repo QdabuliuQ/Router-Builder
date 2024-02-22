@@ -1,6 +1,6 @@
 {
   "name": "router-builder",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "A plugin that automatically generates routing configurations based on the directories",
   "keywords": [
     "路由动态生成",
