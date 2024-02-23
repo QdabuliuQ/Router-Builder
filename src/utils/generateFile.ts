@@ -46,6 +46,7 @@ function generateDepsImport(router: any, importOption: ImportOption) {
 
 // 外层路由处理
 export async function outerRouterOptionHandle(routers: Array<any>, output: string) {
+
   let fileName: string = '';  // 文件名称
   if (!outputPath) {
     // 检查文件输出路径
@@ -59,14 +60,20 @@ export async function outerRouterOptionHandle(routers: Array<any>, output: strin
   const importOption: ImportOption = {}  // 依赖导入
   const moduleImports: Array<string> = []  // 路由模块导入
 
+
   // 遍历所有路由
   for (let i = 0; i < routers.length; i++) {
     // 判断是否存在 module 抽离模块属性
     if (Object.prototype.hasOwnProperty.call(routers[i], 'module')) {
+
+      const moduleName = routers[i].module
+      delete routers[i].module
+
       // 递归调用
-      await innerRouterOptionHandle(routers[i], routers[i].module)
+      await innerRouterOptionHandle(routers[i], moduleName)
       // 标记为 抽离默认
-      routers[i] = `$$$${routers[i].module}$$$`
+      routers[i] = `$$$${moduleName}$$$`
+
       // 加入模块导入语句数组
       moduleImports.push(`import ${routers[i].replace(/\$\$\$/g, "")} from "./${routers[i].replace(/\$\$\$/g, "")}"`)
     } else if (dataType(routers[i].import) === 'object') {  // 如果存在 import 导入对象
@@ -103,12 +110,21 @@ async function innerRouterOptionHandle(router: any, module: string) {
   if (router.children) {
     // 遍历子路由
     for (let i = 0; i < router.children.length; i++) {
+
       // 子路由是否存在 module 属性
-      if (Object.prototype.hasOwnProperty.call(router.children[i], 'module')) {
+      if (Object.prototype.hasOwnProperty.call(router.children[i], 'module') && typeof router.children[i].module === 'string') {
+
+        const moduleName = router.children[i].module
+
+        // 删除 module 属性
+        delete router.children[i].module
+
         // 递归处理
-        await innerRouterOptionHandle(router.children[i], router.children[i].module)
+        await innerRouterOptionHandle(router.children[i], moduleName)
+
         // 标记模块抽离
-        router.children[i] = `$$$${router.children[i].module}$$$`
+        router.children[i] = `$$$${moduleName}$$$`
+
         // 加入模块导入语句数组
         moduleImports.push(`import ${router.children[i].replace(/\$\$\$/g, "")} from "./${router.children[i].replace(/\$\$\$/g, "")}"`)
       } else if (dataType(router.children[i].import) === 'object') {  // 如果存在 import 导入对象
@@ -117,6 +133,7 @@ async function innerRouterOptionHandle(router: any, module: string) {
       }
     }
   }
+
   // 代码去除特殊表述
   router = JSON.stringify(router).replace(/"\$\$\$|\$\$\$"|\$\$\$/g, "").replace(/\\n/g, '\n')
 
@@ -125,6 +142,7 @@ async function innerRouterOptionHandle(router: any, module: string) {
 
   // 格式化代码
   const code = await prettier.format(generateRouterTemplate(router, imports, moduleImports.join("\n")), { parser: 'babel' });
+  console.log(code);
 
   // 写入文件
   fs.promises.writeFile(

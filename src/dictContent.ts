@@ -3,7 +3,8 @@ import { getFilesInfo } from "./filesInfo";
 import { FileInfoItem, FilesInfo } from "./types/filesInfo";
 import { generateRouterConfig, getRouterConfig } from "./routerConfig";
 import { isRegExp } from "./utils/isRegExp";
-import { RouterBuilderConfig, ImportOption } from "./types";
+import { RouterBuilderConfig } from "./types";
+import { fileReader } from "./utils/fileReader";
 
 // 读取文件内容
 async function readFileContent(dictInfo: FileInfoItem, mainConfig: RouterBuilderConfig) {
@@ -13,15 +14,19 @@ async function readFileContent(dictInfo: FileInfoItem, mainConfig: RouterBuilder
       }.vue`,
       "utf-8"
     );
+    // const data = await fileReader(`${dictInfo.fullPath}\\${mainConfig.fileName === "<dictName>" ? dictInfo.name : "index"
+    //   }.vue`)
     const config = getRouterConfig(data);
+    console.log(config, 'config');
+
     return config;
   } catch (err) {
-    return null;
+    console.log(err, "error");
   }
 };
 
 // 读取文件夹内容
-export async function readDictContent(dictInfo: FileInfoItem, imports: ImportOption, mainConfig: RouterBuilderConfig): Promise<any> {
+export async function readDictContent(dictInfo: FileInfoItem, mainConfig: RouterBuilderConfig): Promise<any> {
   // 读取该文件夹下的子文件夹/文件
   const dictList: FilesInfo = getFilesInfo(dictInfo.fullPath);
   if (JSON.stringify(dictList) === "{}") return null; // 空文件夹 直接返回 null
@@ -43,12 +48,12 @@ export async function readDictContent(dictInfo: FileInfoItem, imports: ImportOpt
     };
     // 读取页面文件 查看是否存在 <router></router> 配置对象
     const customRouter = await readFileContent(dictInfo, mainConfig);
+
     if (customRouter) {
       // 生成路由配置
       const res = await generateRouterConfig(
         customRouter,
         defaultRouter,
-        imports,
         dictInfo,
         mainConfig as any
       );
@@ -81,7 +86,7 @@ export async function readDictContent(dictInfo: FileInfoItem, imports: ImportOpt
       }
     }
     // 继续递归调用查找，递归子文件夹
-    const res = await readDictContent(dictList[key], imports, mainConfig);
+    const res = await readDictContent(dictList[key], mainConfig);
     if (router) {
       for (const item of router) {
         if (typeof item === 'string') continue;

@@ -1,11 +1,7 @@
-import fs from "node:fs"
-import prettier from "prettier"
-import { RouterBuilderConfig, ImportOption } from "./types";
+import { RouterBuilderConfig } from "./types";
 import { FileInfoItem } from "./types/filesInfo";
 import { conveyFunction } from "./utils/conveyFunction";
-import { depImportCode, importCode } from "./utils/importCode";
-import { rootPath } from "./utils/rootPath";
-import { dataType } from "./utils/dataType";
+import { importCode } from "./utils/importCode";
 
 // 读取文件 <router></router>
 export function getRouterConfig(content: string) {
@@ -36,7 +32,6 @@ export function getRouterConfig(content: string) {
 export async function generateRouterConfig(
   routerConfig: any,
   defaultRouter: any,
-  imports: ImportOption,
   dictInfo: FileInfoItem,
   config: RouterBuilderConfig
 ) {
@@ -44,18 +39,12 @@ export async function generateRouterConfig(
 
   if (routerConfig) {
     router = [];
+
     for (const item of routerConfig) {
       // 对函数进行处理转换
       conveyFunction(item);
 
       // // 判断import对象
-      // if (dataType(item.import) === 'object') {
-      //   // 处理import对象
-      //   depImportCode(item.import, imports)
-      //   // 删除 import 属性
-      //   delete item.import
-      // }
-
       const webpackChunkName = item.webpackChunkName
       // 如果存在 webpackChunkName 字段，保存然后移除
       item.webpackChunkName && delete item.webpackChunkName
@@ -67,39 +56,6 @@ export async function generateRouterConfig(
       });
     }
   }
+
   return router;
-};
-
-// 生成 router 文件
-export async function generateRouterFile(route: string, imports: string, moduleImports: string, config: RouterBuilderConfig) {
-  // 解析输出路径
-  const paths: string[] = config.output.split("/").filter((item) => Boolean(item));
-  const fileName: string = paths.pop() as string; // 先保存文件名称
-  let fullPath = rootPath;
-  for (const p of paths) {
-    // 遍历路径
-    fullPath += `//${p}`;
-    try {
-      // 判断是否存在文件夹
-      await fs.promises.access(fullPath);
-    } catch (err) {
-      // 不存在则创建文件夹
-      await fs.promises.mkdir(fullPath);
-    }
-  }
-  // 通过 writeFile 方法将最终结果写入到对应路径的文件当中
-  route = route.replace(/\\n/g, '\n');
-  const res = await prettier.format(generateRouterTemplate(route, imports, moduleImports), { parser: 'babel' });
-  fs.promises.writeFile(
-    `${fullPath}//${fileName}`,
-    res
-  );
-};
-
-function generateRouterTemplate(router: string, imports: string, moduleImports: string): string {
-  return `
-${moduleImports}
-${imports}
-export default ${router}  
-`
 };

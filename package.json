@@ -49,6 +49,7 @@
   "author": "QdabuliuQ",
   "license": "MIT",
   "dependencies": {
+    "line-reader": "^0.4.0",
     "path": "^0.12.7"
   },
   "devDependencies": {

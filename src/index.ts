@@ -15,6 +15,7 @@ try {
 
 (function () {
   if (!customConfig) return
+  const start = Date.now()
   // 定义默认的配置
   const defaultConfig: RouterBuilderConfig = {
     entry: "/src/views",
@@ -40,14 +41,15 @@ try {
     (async function () {
       const dictList = getFilesInfo(`${rootPath}\\${entryPath}`); // 获取path目录下的文件内容
       const router = []; // router 对象
-      // 导入语句
-      const imports: ImportOption = {}
+
       for (const key in dictList) {
         // 遍历子文件夹
         if (dictList.hasOwnProperty(key)) {
           if (dictList[key].type === "dict") {
+
             // 判断是否是文件夹类型
-            const res = await readDictContent(dictList[key], imports, mainConfig as any); // 递归搜索
+            const res = await readDictContent(dictList[key], mainConfig as any); // 递归搜索
+
             if (res) {
               // 将递归的结果存入 router 数组
               router.push(...res);
@@ -55,16 +57,10 @@ try {
           }
         }
       }
-      const moduleImports = []
-      for (let item of router) {
-        if (typeof item == 'string') {
-          item = item.replace(/\$\$\$/g, "")
-          moduleImports.push(`import ${item} from "./${item}"`)
-        }
-      }
+
       await outerRouterOptionHandle(router, mainConfig.output)
 
-      console.log(colors(['white', 'greenBG'], "router file generation successful!"));
+      console.log(colors(['white', 'greenBG'], `router file generation successful! (Time-consuming: ${Date.now() - start}ms)`));
     })();
   } else {
     console.log(colors(['white', 'redBG'], "the entry folder is no exist"));
