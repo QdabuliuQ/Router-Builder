@@ -32,7 +32,6 @@ module.exports = {
 
 2. 如果一个页面希望配置成为一个路由页面，则可以在`.vue`文件夹中添加`<router></router>`标签
 
-
 ```html
 // router 标签包裹的内容就是页面路由配置
 <router> title: 'home', meta: { info: "home" } </router>
@@ -56,6 +55,7 @@ module.exports = {
 4. 执行`npx router-builder`可以看到根据`output`选项配置的文件路径输出一个文件，改文件默认导出一个路由数组`export default [  ]`，将该文件导入到对应的路由配置文件当中使用即可。
 
 ## <router>参数
+
 router配置参数，可在以下参数以外继续添加，新增的参数并且不是内置的参数会并入`router`配置对象
 | 参数(params) | 必选(require) | 说明(description) | 类型(type) | 默认值(default) |
 | ------------- | ----------- |------------- |----------------------------- | ----------- |
@@ -63,10 +63,12 @@ router配置参数，可在以下参数以外继续添加，新增的参数并�
 | `name` | `true` | 路由路径，当出现多个`<router>`标签的时候则是必填 | `string` | - |
 | `import` | `false` | 需要导入依赖的，可以配置`import`属性 | `{ [prop: string]: Array<string 或 { name: string, alias?: string, default?: boolean }` | - |
 | `webpackChunkName` | `false` | 导入语句分块注释 | `string` | - |
+| `module` | `false` | 添加`module`属性后，表示该文件的路由包括后续的子路由都会被抽离出来作为一个文件 | `string` | - |
 
 1. `<router></router>`标签支持传入自定义参数，包含了`meta, name, 自定义参数`。
 
 2. 一个文件可以存在多个`<router></router>`，这样意味着这个页面会生成多条路由路径指向该页面。
+
 ```js
 <router>
   name: 'edit',
@@ -80,9 +82,26 @@ router配置参数，可在以下参数以外继续添加，新增的参数并�
     title: 'add'
   }
 </router>
+
+// 输出
+{
+  name: "edit",
+  path: "...",
+  meta: {
+    title: "edit"
+  }
+},
+{
+  name: "add",
+  path: "...",
+  meta: {
+    title: "add"
+  }
+},
 ```
 
 3. `<router> webpackChunkName: "chunkName" </router>`，可以添加固有参数`webpackChunkName`，组件就会在导入的时候自动添加该魔法注释：`component: () => import(/* webpackChunkName: "配置的属性值" */ "path")`。
+
 ```js
 <router>
   webpackChunkName: "chunkName",
@@ -96,13 +115,12 @@ component: () => import(/* webpackChunkName: 'chunkName' */, "path...")
 
 ```js
 <router>
-  beforeEach: (to, from) => {},
-  beforeEach(to, from) {},
-  beforeEach: function(to, from) {}
+  beforeEach: (to, from) => {}, beforeEach(to, from) {}, beforeEach: function(to, from) {}
 </router>
 ```
 
 5. `import`配置：如果在函数当中使用了第三方依赖或者需要导入的依赖，那么可以通过`import`配置对象生成`import`导入语句
+
 ```js
 import: {
   '@/utils/index': [
@@ -122,7 +140,34 @@ import: {
 import getTime, { getDate, getType as _getType } from "@/utils/index"
 ```
 
+6. `module`配置：当页面数量较多，需要将路由模块进行抽离的时候，可以添加上`module`属性，表示进行路由模块抽离，会创建`module`文件，然后自动实现导入和使用模块。
+
+```js
+<router>
+  module: "home",
+  name: "home",
+  customProp: {
+    role: "管理员"
+  }
+</router>
+
+// 输出
+import home from "./home.js"
+
+{
+  home,
+}
+// home模块
+export default {
+  name: "home",
+  customProp: {
+    role: "管理员"
+  }
+}
+```
+
 ## 插件文件结构
+
 ```
 │  .gitignore
 │  main.d.ts
