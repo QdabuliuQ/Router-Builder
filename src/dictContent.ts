@@ -17,7 +17,6 @@ async function readFileContent(dictInfo: FileInfoItem, mainConfig: RouterBuilder
     // const data = await fileReader(`${dictInfo.fullPath}\\${mainConfig.fileName === "<dictName>" ? dictInfo.name : "index"
     //   }.vue`)
     const config = getRouterConfig(data);
-    console.log(config, 'config');
 
     return config;
   } catch (err) {
