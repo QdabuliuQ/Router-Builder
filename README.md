@@ -1,6 +1,32 @@
 # Router-Builder Plugin 自动路由生成插件
 
-这是一款可以根据文件目录，自动生成`vue-router`配置对象，在一些页面数量庞大的项目中适用，当我们每次添加或者删除文件都需要去修改其对应的路由配置，这种工作没有任何技术含量，设置可能会因为配置错误耗费我们开发时间。
+`Router=Builder`可以根据文件目录，自动生成`vue-router`配置对象，页面文件夹的需要遵循一定的规则并且搭配`Router-Builder`进行使用。
+`Router-Builder`可以自动扫描约定好的文件目录结构，自动处理依赖导入关系，生成路由文件。
+
+`Router-Builder`支持文件夹的结构必须是嵌套，一级路由的页面的文件夹包含了二级路由页面的文件，依此类推。
+```
+views
+├───PageA  // 一级页面文件夹
+│   │   index.vue  // 页面文件 文件名称可以是 index 或者通过 router.config.js 中的 fileName 属性指定
+│   └───PageAA  // 二级页面文件夹
+│           index.vue  // 页面文件
+├───PageB  // 一级页面文件夹
+│   │   index.vue
+│   └───PageBA
+│           index.vue
+└───PageC  // 一级页面文件夹
+    │   index.vue  // 页面文件
+    ├───PageCA  // 二级页面文件夹
+    │   │   index.vue  // 页面文件
+    │   ├───PageCAA  // 三级页面文件夹
+    │   │       index.vue  // 页面文件
+    │   └───PageCAB
+    │           index.vue
+    ├───PageCB
+    │       index.vue
+    └───PageCC
+            index.vue
+```
 
 可以在npmjs官网查看：[npm](https://www.npmjs.com/package/router-builder)
 
@@ -169,29 +195,35 @@ export default {
 ## 插件文件结构
 
 ```
-│  .gitignore
-│  main.d.ts
-│  package-lock.json
-│  package.json
-│  README.md
-│  rollup.config.js
-│  tsconfig.json
-│
-├─bin  打包文件夹
-│      index.cjs
-└─src
-    │  dictContent.ts  目录读取
-    │  filesInfo.ts  文件内容读取
-    │  index.ts  入口文件
-    │  routerConfig.ts  生成路由配置
-    │
-    ├─types  类型定义
-    │      filesInfo.ts
-    │      index.ts
-    │
-    └─utils  工具函数
-           funToString.ts  函数转字符串存储
-           importCode.ts  导出语句函数
-           isRegExp.ts  类型校验
-           rootPath.ts  文件路径查询
+│   .eslintignore
+│   .eslintrc.cjs
+│   .gitignore
+│   .prettierrc.json
+│   main.d.ts
+│   package-lock.json
+│   package.json
+│   README.md
+│   rollup.config.js
+│   tsconfig.json
+├───bin  构建后的文件目录
+│       index.cjs  运行文件
+└───src
+    │   dictContent.ts  目录读取
+    │   filesInfo.ts  文件内容读取
+    │   index.ts  入口文件
+    │   routerConfig.ts  生成路由配置
+    │   
+    ├───types  类型定义
+    │       filesInfo.ts
+    │       index.ts
+    │       
+    └───utils  工具函数
+            conveyFunction.ts  函数转字符串存储
+            dataType.ts  类型检验
+            fileReader.ts  文件读取函数
+            generateFile.ts   文件内容生成
+            getImportCode.ts   依赖导入语句
+            importCode.ts  导出语句函数
+            isRegExp.ts  正则校验
+            rootPath.ts  根路径
 ```
