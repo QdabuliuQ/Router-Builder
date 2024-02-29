@@ -24,5 +24,6 @@ export function fileReader(path: string): Promise<string> {
       }
       optionStr.push(line);
     });
+    // resolve(optionStr.join("\n"))
   })
 }

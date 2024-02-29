@@ -50,6 +50,7 @@
   "license": "MIT",
   "dependencies": {
     "line-reader": "^0.4.0",
+    "ora": "^8.0.1",
     "path": "^0.12.7"
   },
   "devDependencies": {
@@ -63,7 +64,6 @@
     "@types/node": "^20.11.5",
     "@typescript-eslint/eslint-plugin": "^6.19.1",
     "@typescript-eslint/parser": "^6.19.1",
-    "colors-console": "^1.0.3",
     "eslint": "^8.56.0",
     "husky": "^3.1.0",
     "lint-staged": "^15.2.0",

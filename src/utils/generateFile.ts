@@ -83,7 +83,7 @@ export async function outerRouterOptionHandle(routers: Array<any>, output: strin
 
       // 递归调用
       await innerRouterOptionHandle(routers[i], name, moduleDepMapped, moduleRouterMapped)
-    } 
+    }
   }
 
   // 将模块导入对象转为 导入语句
@@ -94,7 +94,7 @@ export async function outerRouterOptionHandle(routers: Array<any>, output: strin
 
   // 格式化代码
   const code = await prettier.format(generateRouterTemplate(outerRouter, importDepCode, (moduleRouterMapped.get(name) as Array<string>).join("\n")), { parser: 'babel' });
-  
+
   // 写入文件
   fs.promises.writeFile(
     `${rootPath}//${outputPath}//${fileName}`,
@@ -107,26 +107,26 @@ async function innerRouterOptionHandle(router: any, module: string, moduleDepMap
   if (!moduleRouterMapped.has(module)) {
     moduleRouterMapped.set(module, [])
   }
-  if(!moduleDepMapped.has(module)) {
+  if (!moduleDepMapped.has(module)) {
     moduleDepMapped.set(module, {})
   }
 
   // 判断是否存在子路由
   if (router.children) {
-    
+
     // 遍历子路由
     for (let i = 0; i < router.children.length; i++) {
 
       // 子路由是否存在 module 属性
       if (Object.prototype.hasOwnProperty.call(router.children[i], 'module') && typeof router.children[i].module === 'string') {
-        
+
         const moduleName = router.children[i].module
 
         // 删除 module 属性
         delete router.children[i].module
 
         if (dataType(router.children[i].import) === 'object') {  // 如果存在 import 导入对象
-          
+
           // 进行转换
           if (!moduleDepMapped.has(moduleName)) {
             moduleDepMapped.set(moduleName, {})
@@ -161,6 +161,7 @@ async function innerRouterOptionHandle(router: any, module: string, moduleDepMap
 
   // 代码去除特殊表述
   router = JSON.stringify(router).replace(/"\$\$\$|\$\$\$"|\$\$\$/g, "").replace(/\\n/g, '\n')
+
 
   // 将模块导入对象转为 导入语句
   const importDepCode = getImportCode(moduleDepMapped.get(module) as ImportOption)
