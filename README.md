@@ -195,7 +195,7 @@ export default {
 ## 插件文件结构
 
 ```
-│   .eslintignore
+│   .eslintignore 
 │   .eslintrc.cjs
 │   .gitignore
 │   .prettierrc.json
