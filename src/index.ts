@@ -5,6 +5,7 @@ import { readDictContent } from "./dictContent";
 import { RouterBuilderConfig } from "./types/index";
 import { outerRouterOptionHandle } from "./utils/generateFile";
 
+
 let customConfig = null;
 // 尝试读取配置文件 router.config.js
 try {
@@ -19,7 +20,7 @@ try {
 
   const loading = ora('scaning file...');
   loading.spinner = {
-    "interval": 100,//转轮动画每帧之间的时间间隔 
+    "interval": 100,//转轮动画每帧之间的时间间隔  
     "frames": [
       "-", "\\", "|", "/", "-", "|"
     ],

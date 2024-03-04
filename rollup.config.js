@@ -7,7 +7,7 @@ import { visualizer } from 'rollup-plugin-visualizer';
 
 export default {
   input: './src/index.ts', // 打包入口
-  external: ['prettier'],
+  external: ['prettier', 'line-reader', 'ora'],
   output: {
     // 打包出口
     dir: 'bin',
