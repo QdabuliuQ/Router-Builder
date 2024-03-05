@@ -9,7 +9,7 @@ import { outerRouterOptionHandle } from "./utils/generateFile";
 let customConfig = null;
 // 尝试读取配置文件 router.config.js
 try {
-  customConfig = require(`${process.cwd()}\\router.config.js`);
+  customConfig = require(`${process.cwd()}/router.config.js`);
 } catch (error) {
   const loading = ora('');
   loading.warn("the router.config.js is no exist")
@@ -46,13 +46,13 @@ try {
   const rootPath = process.cwd();
 
   // 入口文件路径
-  const entryPath = mainConfig.entry.split("/").filter(Boolean).join("\\");
+  const entryPath = mainConfig.entry.split("/").filter(Boolean).join("/");
 
   // 判断入口文件夹是否存在
-  if (fs.existsSync(`${rootPath}\\${entryPath}`)) {
+  if (fs.existsSync(`${rootPath}/${entryPath}`)) {
     (async function () {
       try {
-        const dictList = getFilesInfo(`${rootPath}\\${entryPath}`); // 获取path目录下的文件内容
+        const dictList = getFilesInfo(`${rootPath}/${entryPath}`); // 获取path目录下的文件内容
         const router = []; // router 对象
 
         for (const key in dictList) {

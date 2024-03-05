@@ -10,12 +10,12 @@ import { fileReader } from "./utils/fileReader";
 async function readFileContent(dictInfo: FileInfoItem, mainConfig: RouterBuilderConfig) {
   try {
     // const data = await fs.promises.readFile(
-    //   `${dictInfo.fullPath}\\${mainConfig.fileName === "<dictName>" ? dictInfo.name : "index"
+    //   `${dictInfo.fullPath}/${mainConfig.fileName === "<dictName>" ? dictInfo.name : "index"
     //   }.vue`,
     //   "utf-8"
     // );
 
-    const data = await fileReader(`${dictInfo.fullPath}\\${mainConfig.fileName === "<dictName>" ? dictInfo.name : "index"
+    const data = await fileReader(`${dictInfo.fullPath}/${mainConfig.fileName === "<dictName>" ? dictInfo.name : "index"
       }.vue`)
 
     const config = getRouterConfig(data);

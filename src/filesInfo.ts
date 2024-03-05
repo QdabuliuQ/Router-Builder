@@ -12,12 +12,12 @@ export function getFilesInfo(filePath: string) {
     const stats: fs.Stats = fs.statSync(filedir); // 获取文件信息
     filesInfo[fileName] = {
       type: stats.isFile() ? "file" : "dict",
-      path: `\\${fileName}`,
+      path: `/${fileName}`,
       name: fileName,
       names: [
         ...filePath
-          .replace(`${rootPath}\\src\\views`, "")
-          .split("\\")
+          .replace(`${rootPath}/src/views`, "")
+          .split("/")
           .filter(Boolean),
         fileName,
       ],
