@@ -1,6 +1,8 @@
 # Router-Builder Plugin 自动路由生成插件
 
-`Router=Builder`可以根据文件目录，自动生成`vue-router`配置对象，页面文件夹的需要遵循一定的规则并且搭配`Router-Builder`进行使用。
+[npm](https://www.npmjs.com/package/router-builder) / [Github](https://github.com/QdabuliuQ/Router-Builder)
+
+`Router-Builder`可以根据文件目录，自动生成`vue-router`配置对象，页面文件夹的需要遵循一定的规则并且搭配`Router-Builder`进行使用。
 `Router-Builder`可以自动扫描约定好的文件目录结构，自动处理依赖导入关系，生成路由文件。
 
 `Router-Builder`支持文件夹的结构必须是嵌套，一级路由的页面的文件夹包含了二级路由页面的文件，依此类推。
@@ -27,19 +29,25 @@ views
     └───PageCC
             index.vue
 ```
-
-可以在npmjs官网查看：[npm](https://www.npmjs.com/package/router-builder)
-
 所以可以通过`router-builder`自动生成`router`配置对象，目前`router-builder`只适用于`vue`。
 
 ## 插件使用
 
 1. 插件安装，插件作为开发依赖安装到项目当中。
-   `npm install router-builder --save-dev`
+   `npm i router-builder -D / npm install router-builder --save-dev`
 
-2. 插件使用，在终端中输入以下命令
-   `npx router-builder`
+2. 在`src`同级目录下创建`router.config.js`配置文件。配置文件模板如下：
+```javascript
+module.exports = {
+  entry: "/src/views", // 读取文件路径入口
+  output: "/src/router/router.js", // 路由文件输出路径
+  importPrefix: "@/views", // 组件导入前缀
+  ignoreFolder: [“components”, /child\d/],  // 忽略匹配的文件夹 可以是字符串和正则
+  fileName: "index", // 文件夹下的文件名称，通常是页面文件
+};
+```
 
+3. 插件使用，在终端中输入命令：`npx router-builder`
 **当终端输出`router file generation successful!`则表示成功生成**
 
 ## 插件配置
