@@ -42,7 +42,7 @@ module.exports = {
   entry: "/src/views", // 读取文件路径入口
   output: "/src/router/router.js", // 路由文件输出路径
   importPrefix: "@/views", // 组件导入前缀
-  ignoreFolder: [“components”, /child\d/],  // 忽略匹配的文件夹 可以是字符串和正则
+  ignoreFolder: ["components", /child\d/],  // 忽略匹配的文件夹 可以是字符串和正则
   fileName: "index", // 文件夹下的文件名称，通常是页面文件
 };
 ```
@@ -59,7 +59,7 @@ module.exports = {
   entry: "/src/views", // 读取文件路径入口
   output: "/src/router/router.js", // 路由文件输出路径
   importPrefix: "@/views", // 组件导入前缀
-  ignoreFolder: [“components”, /child\d/],  // 忽略匹配的文件夹 可以是字符串和正则
+  ignoreFolder: ["components", /child\d/],  // 忽略匹配的文件夹 可以是字符串和正则
   fileName: "index", // 文件夹下的文件名称，通常是页面文件
 };
 ```
