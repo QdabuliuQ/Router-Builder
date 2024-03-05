@@ -24,7 +24,7 @@ export function getImportCode(imports: ImportOption): string {
       let defaultExportDep = ''  // 默认导出
       // 遍历每一子项
       for (const [k, v] of imports[key]) {
-        
+
         // 如果是字符串 具名导出
         if (dataType(v) === 'string') {
           specificExportDeps.push(v)
@@ -35,13 +35,12 @@ export function getImportCode(imports: ImportOption): string {
           } else {
             specificExportDeps.push((v as ImportOptionItem).alias ? `${(v as ImportOptionItem).name} as ${(v as ImportOptionItem).alias}` : (v as ImportOptionItem).name)
           }
-          
         }
       }
       importCodes.push(`import ${defaultExportDep}${specificExportDeps.length && defaultExportDep !== '' ? ',' : ''} ${specificExportDeps.length ? `{ ${specificExportDeps.join(',')} }` : ''} from "${key}";`)
     }
   }
-  
+
   return importCodes.join("")
 }
 
@@ -49,7 +48,7 @@ export function getImportCode(imports: ImportOption): string {
 // importOption 传入的 import 对象
 // moduleImportOption 合并后的 import 对象
 export function mergeImportOption(importOption: ConfigImportOption, moduleImportOption: ImportOption) {
-  
+
   for (const key in importOption) {
     if (Object.prototype.hasOwnProperty.call(importOption, key)) {
       if (dataType(importOption[key]) !== 'array') continue
