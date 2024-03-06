@@ -1,10 +1,10 @@
 import fs from "node:fs"
+import path from "node:path";
 import ora from 'ora'
 import { getFilesInfo } from "./filesInfo";
 import { readDictContent } from "./dictContent";
 import { RouterBuilderConfig } from "./types/index";
 import { outerRouterOptionHandle } from "./utils/generateFile";
-import path from "node:path";
 
 
 let customConfig = null;
@@ -48,7 +48,7 @@ try {
 
   // 入口文件路径
   const entryPath = mainConfig.entry.split("/").filter(Boolean).join("\\");
-  const fullPath = path.join(rootPath, entryPath)
+  const fullPath = path.join(rootPath, mainConfig.entry)
   console.log(fullPath);
 
 
