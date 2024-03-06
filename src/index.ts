@@ -4,6 +4,7 @@ import { getFilesInfo } from "./filesInfo";
 import { readDictContent } from "./dictContent";
 import { RouterBuilderConfig } from "./types/index";
 import { outerRouterOptionHandle } from "./utils/generateFile";
+import path from "node:path";
 
 
 let customConfig = null;
@@ -47,14 +48,13 @@ try {
 
   // 入口文件路径
   const entryPath = mainConfig.entry.split("/").filter(Boolean).join("\\");
-  console.log(`${rootPath}\\${entryPath}`);
-
+  const fullPath = path.join(rootPath, entryPath)
 
   // 判断入口文件夹是否存在
-  if (fs.existsSync(`${rootPath}/${entryPath}`)) {
+  if (fs.existsSync(fullPath)) {
     (async function () {
       try {
-        const dictList = getFilesInfo(`${rootPath}/${entryPath}`); // 获取path目录下的文件内容
+        const dictList = getFilesInfo(fullPath); // 获取path目录下的文件内容
         const router = []; // router 对象
 
         for (const key in dictList) {
