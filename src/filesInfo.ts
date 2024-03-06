@@ -7,6 +7,7 @@ import { rootPath } from "./utils/rootPath";
 export function getFilesInfo(filePath: string) {
   let files: Array<string> = fs.readdirSync(filePath);
   const filesInfo: FilesInfo = {};
+
   files.forEach(function (fileName) {
     const filedir: string = path.join(filePath, fileName); // 文件路径
 
@@ -16,9 +17,15 @@ export function getFilesInfo(filePath: string) {
       path: `/${fileName}`.replace(/\\\\/g, '/'),
       name: fileName,
       names: [
+        // ...filePath
+        //   .replace(`${rootPath}\\src\\views`, "")
+        //   .replace(/\\/g, '/')
+        //   .split("/")
+        //   .filter(Boolean),
+        // fileName,
+
         ...filePath
-          .replace(`${rootPath}\\src\\views`, "")
-          .replace(/\\/g, '/')
+          .replace(filePath, "")
           .split("/")
           .filter(Boolean),
         fileName,
