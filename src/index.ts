@@ -47,16 +47,13 @@ try {
   const rootPath = process.cwd();
 
   // 入口文件路径
-  const entryPath = mainConfig.entry.split("/").filter(Boolean).join("\\");
   const fullPath = path.join(rootPath, mainConfig.entry)
-  console.log(fullPath);
-
 
   // 判断入口文件夹是否存在
   if (fs.existsSync(fullPath)) {
     (async function () {
       try {
-        const dictList = getFilesInfo(fullPath); // 获取path目录下的文件内容
+        const dictList = getFilesInfo(fullPath, fullPath); // 获取path目录下的文件内容
         const router = []; // router 对象
 
         for (const key in dictList) {
@@ -64,7 +61,7 @@ try {
           if (dictList.hasOwnProperty(key)) {
             if (dictList[key].type === "dict") {
               // 判断是否是文件夹类型
-              const res = await readDictContent(dictList[key], mainConfig as any); // 递归搜索
+              const res = await readDictContent(dictList[key], mainConfig as any, ""); // 递归搜索
               if (res) {
                 // 将递归的结果存入 router 数组
                 router.push(...res);
@@ -80,7 +77,6 @@ try {
       }
     })();
   } else {
-    console.log(fullPath);
     loading.fail("the entry folder is no exist")
   }
 })()

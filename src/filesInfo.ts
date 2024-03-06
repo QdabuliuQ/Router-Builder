@@ -4,7 +4,7 @@ import { FilesInfo } from "./types/filesInfo";
 import { rootPath } from "./utils/rootPath";
 
 // 读取目录内容
-export function getFilesInfo(filePath: string) {
+export function getFilesInfo(filePath: string, entryPath: string) {
   let files: Array<string> = fs.readdirSync(filePath);
   const filesInfo: FilesInfo = {};
 
@@ -25,15 +25,14 @@ export function getFilesInfo(filePath: string) {
         // fileName,
 
         ...filePath
-          .replace(filePath, "")
+          .replace(entryPath, "")
+          .replace(/\\/g, '/')
           .split("/")
           .filter(Boolean),
         fileName,
       ],
       fullPath: filedir,
     };
-    console.log(filesInfo[fileName].path, filesInfo[fileName].names, filePath
-      .replace(`${rootPath}\\src\\views`, "").replace(/\\/g, '/'));
   });
   return filesInfo;
 };

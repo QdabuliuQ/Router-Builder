@@ -1,10 +1,11 @@
-import fs from "node:fs"
+import path from "node:path";
 import { getFilesInfo } from "./filesInfo";
 import { FileInfoItem, FilesInfo } from "./types/filesInfo";
 import { generateRouterConfig, getRouterConfig } from "./routerConfig";
 import { isRegExp } from "./utils/isRegExp";
 import { RouterBuilderConfig } from "./types";
 import { fileReader } from "./utils/fileReader";
+import { rootPath } from "./utils/rootPath";
 
 // 读取文件内容
 async function readFileContent(dictInfo: FileInfoItem, mainConfig: RouterBuilderConfig) {
@@ -27,9 +28,9 @@ async function readFileContent(dictInfo: FileInfoItem, mainConfig: RouterBuilder
 };
 
 // 读取文件夹内容
-export async function readDictContent(dictInfo: FileInfoItem, mainConfig: RouterBuilderConfig): Promise<any> {
+export async function readDictContent(dictInfo: FileInfoItem, mainConfig: RouterBuilderConfig, parentPath: string): Promise<any> {
   // 读取该文件夹下的子文件夹/文件
-  const dictList: FilesInfo = getFilesInfo(dictInfo.fullPath);
+  const dictList: FilesInfo = getFilesInfo(dictInfo.fullPath, path.join(rootPath, mainConfig.entry));
   if (JSON.stringify(dictList) === "{}") return null; // 空文件夹 直接返回 null
   let router = null
   // 判断是否存在 vue 文件
@@ -43,9 +44,10 @@ export async function readDictContent(dictInfo: FileInfoItem, mainConfig: Router
     // 判断文件夹内部是否存在页面文件（index.vue / <dictName>.vue）
     const defaultRouter = {
       // 默认 router 配置
-      path: dictInfo.names.length
-        ? `/${dictInfo.names.join("/")}`
-        : `/${dictInfo.name}`,
+      // path: dictInfo.names.length
+      //   ? `/${dictInfo.names.join("/")}`
+      //   : `/${dictInfo.name}`,
+      path: parentPath ? `${parentPath}/${dictInfo.name}` : `/${dictInfo.name}`,
     };
     // 读取页面文件 查看是否存在 <router></router> 配置对象
     const customRouter = await readFileContent(dictInfo, mainConfig);
@@ -87,15 +89,16 @@ export async function readDictContent(dictInfo: FileInfoItem, mainConfig: Router
       }
     }
     // 继续递归调用查找，递归子文件夹
-    const res = await readDictContent(dictList[key], mainConfig);
+
     if (router) {
       for (const item of router) {
         if (typeof item === 'string') continue;
+        const res = await readDictContent(dictList[key], mainConfig, item.path);
         if (!item.children) item.children = [];
         res && item.children.push(...res);
       }
     } else {
-      router = res;
+      router = await readDictContent(dictList[key], mainConfig, parentPath);
     }
   }
 
