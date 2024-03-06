@@ -47,6 +47,8 @@ try {
 
   // 入口文件路径
   const entryPath = mainConfig.entry.split("/").filter(Boolean).join("\\");
+  console.log(`${rootPath}\\${entryPath}`);
+
 
   // 判断入口文件夹是否存在
   if (fs.existsSync(`${rootPath}\\${entryPath}`)) {
