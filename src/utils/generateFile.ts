@@ -97,7 +97,7 @@ export async function outerRouterOptionHandle(routers: Array<any>, output: strin
 
   // 写入文件
   fs.promises.writeFile(
-    `${rootPath}//${outputPath}//${fileName}`,
+    `${rootPath}/${outputPath}/${fileName}`,
     code
   );
 }

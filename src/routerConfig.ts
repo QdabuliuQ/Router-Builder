@@ -52,7 +52,7 @@ export async function generateRouterConfig(
       router.push({
         ...defaultRouter,
         ...item,
-        component: importCode(dictInfo.names, dictInfo.name, config, webpackChunkName),
+        component: importCode(dictInfo.names, dictInfo.name, config, webpackChunkName).replace('\\', '/'),
       });
     }
   }

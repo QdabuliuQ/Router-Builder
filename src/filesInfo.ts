@@ -9,20 +9,24 @@ export function getFilesInfo(filePath: string) {
   const filesInfo: FilesInfo = {};
   files.forEach(function (fileName) {
     const filedir: string = path.join(filePath, fileName); // 文件路径
+
     const stats: fs.Stats = fs.statSync(filedir); // 获取文件信息
     filesInfo[fileName] = {
       type: stats.isFile() ? "file" : "dict",
-      path: `/${fileName}`,
+      path: `/${fileName}`.replace(/\\\\/g, '/'),
       name: fileName,
       names: [
         ...filePath
-          .replace(`${rootPath}/src/views`, "")
+          .replace(`${rootPath}\\src\\views`, "")
+          .replace(/\\/g, '/')
           .split("/")
           .filter(Boolean),
         fileName,
       ],
       fullPath: filedir,
     };
+    console.log(filesInfo[fileName].path, filesInfo[fileName].names, filePath
+      .replace(`${rootPath}\\src\\views`, "").replace(/\\/g, '/'));
   });
   return filesInfo;
 };
