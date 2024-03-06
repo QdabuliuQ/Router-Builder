@@ -80,6 +80,7 @@ try {
       }
     })();
   } else {
+    console.log(fullPath);
     loading.fail("the entry folder is no exist")
   }
 })()
