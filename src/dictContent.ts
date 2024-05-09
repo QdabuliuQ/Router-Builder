@@ -48,6 +48,7 @@ export async function readDictContent(dictInfo: FileInfoItem, mainConfig: Router
       //   ? `/${dictInfo.names.join("/")}`
       //   : `/${dictInfo.name}`,
       path: parentPath ? `${parentPath}/${dictInfo.name}` : `/${dictInfo.name}`,
+      name: dictInfo.name
     };
     // 读取页面文件 查看是否存在 <router></router> 配置对象
     const customRouter = await readFileContent(dictInfo, mainConfig);
